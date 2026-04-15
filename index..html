@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Harvest TCI Building Fund Tracker</title>
+<style>
+@font-face{font-family:'Metropolis';font-weight:400;font-style:normal;src:url('https://cdn.jsdelivr.net/gh/dw5/Metropolis@master/Metropolis-Regular.woff2') format('woff2')}
+@font-face{font-family:'Metropolis';font-weight:600;font-style:normal;src:url('https://cdn.jsdelivr.net/gh/dw5/Metropolis@master/Metropolis-SemiBold.woff2') format('woff2')}
+@font-face{font-family:'Metropolis';font-weight:700;font-style:normal;src:url('https://cdn.jsdelivr.net/gh/dw5/Metropolis@master/Metropolis-Bold.woff2') format('woff2')}
+@font-face{font-family:'Metropolis';font-weight:800;font-style:normal;src:url('https://cdn.jsdelivr.net/gh/dw5/Metropolis@master/Metropolis-ExtraBold.woff2') format('woff2')}
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal-dark:#037b8c;
+  --teal-mid:#1d9baf;
+  --teal-light:#51c1d7;
+  --teal-pale:#e1f5f8;
+  --black:#0a0a0a;
+  --white:#ffffff;
+  --off-white:#f7f6f2;
+  --text:#1a2628;
+  --text-mid:#4a5e62;
+  --text-light:#7a9096;
+  --border:#dde8ea;
+  --green:#0f6e56;
+}
+body{
+  font-family:'Metropolis',sans-serif;
+  background:var(--off-white);
+  color:var(--text);
+  padding:24px 16px;
+}
+.wrap{
+  max-width:760px;
+  margin:0 auto;
+}
+.card{
+  background:var(--white);
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 2px 40px rgba(3,123,140,0.10);
+}
+.top-band{
+  background:var(--black);
+  padding:28px 32px 24px;
+  position:relative;
+  overflow:hidden;
+}
+.top-band::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:220px;height:220px;
+  border-radius:50%;
+  background:rgba(3,123,140,0.18);
+}
+.top-band::after{
+  content:'';
+  position:absolute;
+  bottom:-40px;left:40px;
+  width:140px;height:140px;
+  border-radius:50%;
+  background:rgba(81,193,215,0.10);
+}
+.church-name{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--teal-light);
+  margin-bottom:10px;
+  position:relative;z-index:1;
+}
+.fund-title{
+  font-size:clamp(26px,4vw,36px);
+  font-weight:800;
+  color:var(--white);
+  line-height:1.1;
+  margin-bottom:4px;
+  position:relative;z-index:1;
+}
+.fund-title em{
+  font-style:normal;
+  color:var(--teal-light);
+  font-weight:600;
+}
+.fund-sub{
+  font-size:12px;
+  color:rgba(255,255,255,0.55);
+  font-weight:400;
+  position:relative;z-index:1;
+  margin-top:6px;
+}
+.numbers-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border-bottom:1px solid var(--border);
+}
+.num-block{
+  padding:20px 20px 16px;
+  text-align:center;
+  border-right:1px solid var(--border);
+}
+.num-block:last-child{border-right:none}
+.num-label{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--text-light);
+  margin-bottom:6px;
+}
+.num-val{
+  font-size:22px;
+  font-weight:700;
+  color:var(--text);
+  line-height:1.1;
+}
+.num-val.teal{color:var(--teal-dark)}
+.num-val.green{color:var(--green)}
+.progress-section{padding:24px 32px 18px}
+.progress-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-bottom:10px;
+}
+.progress-label{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--text-light);
+}
+.progress-pct{
+  font-size:20px;
+  font-weight:700;
+  color:var(--teal-dark);
+}
+.bar-track{
+  height:12px;
+  background:var(--teal-pale);
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:8px;
+}
+.bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--teal-dark),var(--teal-light));
+  border-radius:6px;
+}
+.progress-caption{
+  font-size:12px;
+  color:var(--text-light);
+  text-align:right;
+}
+.adopted-section{padding:16px 32px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.adopted-label{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--text-light);margin-bottom:10px}
+.project-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--teal-pale);
+  border:1px solid rgba(3,123,140,.18);
+  border-radius:10px;
+  padding:12px 16px;
+  margin-bottom:10px;
+  gap:12px;
+}
+.project-row:last-child{margin-bottom:0}
+.project-left{display:flex;align-items:flex-start;gap:10px}
+.project-dot{width:8px;height:8px;border-radius:50%;background:var(--teal-dark);margin-top:6px;flex-shrink:0}
+.project-group{font-size:13px;font-weight:700;color:var(--teal-dark)}
+.project-item{font-size:12px;color:var(--text-mid);margin-top:2px}
+.project-badge{
+  display:inline-block;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--teal-dark);
+  background:rgba(3,123,140,.12);
+  border:1px solid rgba(3,123,140,.25);
+  border-radius:20px;
+  padding:2px 10px;
+  margin-top:6px;
+}
+.project-amt{font-size:15px;font-weight:700;color:var(--teal-dark);white-space:nowrap}
+.verse-strip{
+  background:var(--teal-pale);
+  border-top:1px solid rgba(3,123,140,0.15);
+  border-bottom:1px solid rgba(3,123,140,0.15);
+  padding:14px 32px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.verse-line{
+  width:3px;
+  height:36px;
+  background:var(--teal-dark);
+  border-radius:2px;
+  flex-shrink:0;
+}
+.verse-text{
+  font-style:italic;
+  font-size:13px;
+  color:var(--teal-dark);
+  line-height:1.5;
+}
+.verse-ref{
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--teal-mid);
+  font-style:normal;
+  font-weight:600;
+  margin-top:2px;
+}
+.updated{
+  padding:16px 32px 20px;
+  text-align:right;
+  font-size:11px;
+  color:var(--text-light);
+}
+.tip{
+  margin-top:14px;
+  background:#fff7df;
+  color:#5d4a00;
+  border:1px solid #f0df9a;
+  border-radius:12px;
+  padding:12px 14px;
+  font-size:12px;
+  line-height:1.5;
+}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:rgba(0,0,0,.04);padding:1px 4px;border-radius:4px}
+@media (max-width:640px){
+  .numbers-row{grid-template-columns:1fr}
+  .num-block{border-right:none;border-bottom:1px solid var(--border)}
+  .num-block:last-child{border-bottom:none}
+  .progress-section,.adopted-section,.verse-strip,.updated,.top-band{padding-left:20px;padding-right:20px}
+  .project-row{align-items:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="top-band">
+      <div class="church-name">Harvest Bible Chapel TCI</div>
+      <div class="fund-title">Building Fund<br><em>Progress Tracker</em></div>
+      <div class="fund-sub">Simple website version</div>
+    </div>
+
+    <div class="numbers-row">
+      <div class="num-block">
+        <div class="num-label">Goal</div>
+        <div class="num-val" id="displayGoal"></div>
+      </div>
+      <div class="num-block">
+        <div class="num-label">Pledge</div>
+        <div class="num-val teal" id="displayPledge"></div>
+      </div>
+      <div class="num-block">
+        <div class="num-label">Remaining</div>
+        <div class="num-val green" id="displayRemaining"></div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <div class="progress-header">
+        <div class="progress-label">Campaign progress</div>
+        <div class="progress-pct" id="displayPct"></div>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" id="barFill"></div>
+      </div>
+      <div class="progress-caption" id="displayCaption"></div>
+    </div>
+
+    <div class="adopted-section">
+      <div class="adopted-label">Groups who have adopted a project</div>
+      <div id="projects"></div>
+    </div>
+
+    <div class="verse-strip">
+      <div class="verse-line"></div>
+      <div>
+        <div class="verse-text">"Unless the Lord builds the house, those who build it labor in vain."</div>
+        <div class="verse-ref">Psalm 127:1</div>
+      </div>
+    </div>
+
+    <div class="updated" id="lastUpdated"></div>
+  </div>
+
+  <div class="tip">
+    To update this later, open the file and change the numbers inside <code>const DATA = {...}</code> near the bottom. Then upload the file again and replace the old one.
+  </div>
+</div>
+
+<script>
+const DATA = {
+  goal: 1500000,
+  pledge: 20000,
+  lastUpdated: 'April 15, 2026',
+  adoptedProjects: [
+    {
+      group: 'D-Group — Overcomers',
+      item: 'Painting',
+      amount: 20000,
+      status: 'Adopted'
+    }
+  ]
+};
+
+function money(n){
+  return '$' + Number(n).toLocaleString();
+}
+
+function render(){
+  const goal = Number(DATA.goal) || 0;
+  const pledge = Number(DATA.pledge) || 0;
+  const remaining = Math.max(goal - pledge, 0);
+  const pct = goal > 0 ? (pledge / goal) * 100 : 0;
+  const pctDisplay = pct >= 10 ? pct.toFixed(1) : pct.toFixed(2);
+
+  document.getElementById('displayGoal').textContent = money(goal);
+  document.getElementById('displayPledge').textContent = money(pledge);
+  document.getElementById('displayRemaining').textContent = money(remaining);
+  document.getElementById('displayPct').textContent = pctDisplay + '%';
+  document.getElementById('barFill').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('displayCaption').textContent =
+    remaining > 0 ? money(remaining) + ' still needed to reach our goal' : 'Goal reached! Praise God!';
+  document.getElementById('lastUpdated').textContent = 'Last updated: ' + DATA.lastUpdated;
+
+  const projects = document.getElementById('projects');
+  projects.innerHTML = '';
+  (DATA.adoptedProjects || []).forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'project-row';
+    row.innerHTML = `
+      <div class="project-left">
+        <div class="project-dot"></div>
+        <div>
+          <div class="project-group">${p.group || ''}</div>
+          <div class="project-item">${p.item || ''}</div>
+          <div class="project-badge">${p.status || 'Adopted'}</div>
+        </div>
+      </div>
+      <div class="project-amt">${money(p.amount || 0)}</div>
+    `;
+    projects.appendChild(row);
+  });
+}
+render();
+</script>
+</body>
+</html>
